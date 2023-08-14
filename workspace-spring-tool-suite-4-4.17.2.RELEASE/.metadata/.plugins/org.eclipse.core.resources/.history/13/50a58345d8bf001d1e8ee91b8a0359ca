@@ -1,0 +1,5 @@
+package com.testingAPI.blog.entity;
+
+public class User {
+
+}

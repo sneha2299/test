@@ -1,0 +1,5 @@
+#application-development.properties
+spring.datasource.url=jdbc:mysql://localhost:3306/block_app_apis
+spring.datasource.username=root
+spring.datasource.password=220699
+spring.jpa.show-sql=true

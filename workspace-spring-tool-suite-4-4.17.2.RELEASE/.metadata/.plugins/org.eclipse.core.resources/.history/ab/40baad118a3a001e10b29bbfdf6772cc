@@ -1,0 +1,50 @@
+package com.testingAPI.blog.services.impl;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.testingAPI.blog.entity.Comment;
+import com.testingAPI.blog.entity.Post;
+import com.testingAPI.blog.entity.User;
+import com.testingAPI.blog.exception.ResourceNotFoundException;
+import com.testingAPI.blog.payload.CommentDto;
+import com.testingAPI.blog.repository.CommentRepo;
+import com.testingAPI.blog.repository.PostRepo;
+import com.testingAPI.blog.repository.UserRepo;
+import com.testingAPI.blog.services.CommentService;
+
+@Service
+public class CommentServiceImpl implements CommentService {
+
+	@Autowired(required = false)
+	private PostRepo postRepo;
+	
+	@Autowired(required = false)
+	private UserRepo userRepo;
+	
+	@Autowired
+	private CommentRepo commentRepo;
+	
+	@Autowired
+	private ModelMapper modelMapper;
+	
+	@Override
+	public CommentDto createComment(CommentDto commentDto, Integer postID, Integer userID) {
+		User user = this.userRepo.findById(userID).orElseThrow(()-> new ResourceNotFoundException("User", "ID", userID));
+		Post post = this.postRepo.findById(postID).orElseThrow(()-> new ResourceNotFoundException("Post", "ID", postID));
+		Comment comment = this.modelMapper.map(commentDto, Comment.class);
+		comment.setPost(post);
+		comment.setUser(user);
+		Comment savedComment= this.commentRepo.save(comment);
+		return this.modelMapper.map(savedComment, CommentDto.class);
+	}
+
+	@Override
+	public void deleteComment(Integer commentID) {
+		
+		Comment com= this.commentRepo.findById(commentID).orElseThrow(()-> new ResourceNotFoundException("comment", "id", commentID));
+		this.commentRepo.delete(com);
+	}
+
+}
